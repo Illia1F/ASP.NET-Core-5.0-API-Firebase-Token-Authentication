@@ -22,7 +22,9 @@
                 options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     In = ParameterLocation.Header,
-                    Description = "Please enter token",
+                    Description = @"Authorization header using the Bearer scheme. \r\n\r\n 
+                                      Enter 'Bearer' [space] and then your token in the text input below.
+                                      \r\n\r\nExample: 'Bearer [your token]'",
                     Name = "Authorization",
                     Type = SecuritySchemeType.Http,
                     BearerFormat = "JWT",

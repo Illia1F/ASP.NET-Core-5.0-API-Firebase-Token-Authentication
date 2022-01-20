@@ -1,42 +1,55 @@
 ﻿namespace ASP.NET_Core_5._0_API_Firebase_Token_Authentication.Controllers
 {
+    using FirebaseAdmin.Auth;
     using Microsoft.AspNetCore.Mvc;
-    using System.Collections.Generic;
+    using System.Threading.Tasks;
+
+    using Infrastructure.Attributes;
+    using Infrastructure.Models;
+    using Infrastructure.Services;
 
     [Route("api/[controller]")]
     [ApiController]
     public class FirebaseTokenController : ControllerBase
     {
-        // GET: api/<FirebaseTokenController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly IFirebaseService _service;
+
+        public FirebaseTokenController(IFirebaseService service) : base()
         {
-            return new string[] { "value1", "value2" };
+            _service = service;
         }
 
-        // GET api/<FirebaseTokenController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        /// <summary>
+        /// In order to use this method you have to enable Anonymous Sign-in provider 
+        /// in Firebase Console -> Authentication -> Sign-In Method
+        /// https://console.firebase.google.com/u/0/project/[PROJECT_ID]/authentication/providers
+        /// </summary>
+        [HttpGet("SignInAnonymously")]
+        public async Task<ActionResult<FirebaseUserToken>> SignInAnonymously()
         {
-            return "value";
+            return await _service.SignInAnonymously();
         }
 
-        // POST api/<FirebaseTokenController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        /// <summary>
+        /// In order to use this method you have to enable Email/Password Sign-in provider 
+        /// in Firebase Console -> Authentication -> Sign-In Method
+        /// https://console.firebase.google.com/u/0/project/[PROJECT_ID]/authentication/providers
+        /// </summary>
+        [HttpGet("SignInWithEmailAndPassword")]
+        public async Task<ActionResult<FirebaseUserToken>> SignInWithEmailAndPassword(string email, string password)
         {
+            return await _service.SignInWithEmailAndPassword(email, password);
         }
 
-        // PUT api/<FirebaseTokenController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        /// <summary>
+        /// You have to be authorized in swagger to be able get data from firebase token.
+        /// </summary>
+        /// <returns></returns>
+        [Authorize]
+        [HttpGet("GetDataFromMyToken")]
+        public async Task<ActionResult<FirebaseToken>> GetDataFromFirebaseToken()
         {
-        }
-
-        // DELETE api/<FirebaseTokenController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
+            return await Task.FromResult((FirebaseToken)HttpContext.Items["user"]);
         }
     }
 }
