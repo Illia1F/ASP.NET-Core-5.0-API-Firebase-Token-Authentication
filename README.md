@@ -7,6 +7,8 @@
 
 ## General info
 Simple example of how to implement Firebase Token Authentication in a ASP.NET Core 5.0 API with C#.
+
+![alt text](https://github.com/Illia1F/ASP.NET-Core-5.0-API-Firebase-Token-Authentication/blob/master/swagger.jpg?raw=true)
 	
 ## Technologies
 Project is created with:
