@@ -8,33 +8,33 @@
     using Infrastructure.Models;
     using Infrastructure.Services;
 
+    /// In order to be able use SignIn meethods you have to enable Sign-in provider 
+    /// in Firebase Console -> Authentication -> Sign-In Method
+    /// https://console.firebase.google.com/u/0/project/[PROJECT_ID]/authentication/providers
     [Route("api/[controller]")]
     [ApiController]
-    public class FirebaseTokenController : ControllerBase
+    public class FirebaseController : ControllerBase
     {
         private readonly IFirebaseService _service;
 
-        public FirebaseTokenController(IFirebaseService service) : base()
+        public FirebaseController(IFirebaseService service) : base()
         {
             _service = service;
         }
 
-        /// <summary>
-        /// In order to use this method you have to enable Anonymous Sign-in provider 
-        /// in Firebase Console -> Authentication -> Sign-In Method
-        /// https://console.firebase.google.com/u/0/project/[PROJECT_ID]/authentication/providers
-        /// </summary>
         [HttpGet("SignInAnonymously")]
         public async Task<ActionResult<FirebaseUserToken>> SignInAnonymously()
         {
             return await _service.SignInAnonymously();
         }
 
-        /// <summary>
-        /// In order to use this method you have to enable Email/Password Sign-in provider 
-        /// in Firebase Console -> Authentication -> Sign-In Method
-        /// https://console.firebase.google.com/u/0/project/[PROJECT_ID]/authentication/providers
-        /// </summary>
+        [HttpGet("SignUpWithEmailAndPassword")]
+        public async Task<ActionResult<FirebaseUserToken>> SignUpWithEmailAndPassword(string email, string password)
+        {
+            return await _service.SignUpWithEmailAndPassword(email, password);
+        }
+
+
         [HttpGet("SignInWithEmailAndPassword")]
         public async Task<ActionResult<FirebaseUserToken>> SignInWithEmailAndPassword(string email, string password)
         {

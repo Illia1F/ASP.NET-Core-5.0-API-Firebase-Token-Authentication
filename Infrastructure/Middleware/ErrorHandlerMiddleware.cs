@@ -1,5 +1,6 @@
 ﻿namespace ASP.NET_Core_5._0_API_Firebase_Token_Authentication.Infrastructure.Middleware
 {
+    using ASP.NET_Core_5._0_API_Firebase_Token_Authentication.Infrastructure.Exceptions;
     using Microsoft.AspNetCore.Http;
     using System;
     using System.Collections.Generic;
@@ -26,11 +27,16 @@
             {
                 var response = context.Response;
                 response.ContentType = "application/json";
-
+                
                 switch (error)
                 {
-                    case KeyNotFoundException e:
-                        // not found error
+                    case FirebaseException firebaseEx:
+                        response.StatusCode = firebaseEx.Code;
+                        break;
+                    case BadHttpRequestException:
+                        response.StatusCode = (int)HttpStatusCode.BadRequest;
+                        break;
+                    case KeyNotFoundException:
                         response.StatusCode = (int)HttpStatusCode.NotFound;
                         break;
                     default:

@@ -34,6 +34,8 @@ namespace ASP.NET_Core_5._0_API_Firebase_Token_Authentication
             // https://console.firebase.google.com/u/0/project/[YOUR_PROJECT_ID]/settings/serviceaccounts/adminsdk
             services.AddFirebaseAdminWithCredentialFromFile("firebase-adminsdk-secret-key.json");
 
+            services.AddHttpClient();
+
             // configure DI for application services
             services.AddScoped<IFirebaseAdminUtils, FirebaseAdminUtils>();
             services.AddScoped<IFirebaseService, FirebaseService>();
