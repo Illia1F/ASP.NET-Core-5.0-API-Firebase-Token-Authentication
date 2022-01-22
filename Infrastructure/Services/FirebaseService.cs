@@ -10,21 +10,29 @@
     using Infrastructure.Models;   
     using Infrastructure.Exceptions;
 
+    /// <summary>
+    /// In order to use this method you have to enable Sign-in provider 
+    /// in Firebase Console -> Authentication -> Sign-In Method
+    /// https://console.firebase.google.com/u/0/project/[PROJECT_ID]/authentication/providers
+    /// </summary>
     public interface IFirebaseService
     {
         /// <summary>
         /// In order to use this method you have to enable Anonymous Sign-in provider 
-        /// in Firebase Console -> Authentication -> Sign-In Method
-        /// https://console.firebase.google.com/u/0/project/[PROJECT_ID]/authentication/providers
         /// </summary>
         Task<FirebaseUserToken> SignInAnonymously();
         /// <summary>
         /// In order to use this method you have to enable Email/Password Sign-in provider 
-        /// in Firebase Console -> Authentication -> Sign-In Method
-        /// https://console.firebase.google.com/u/0/project/[PROJECT_ID]/authentication/providers
         /// </summary>
         Task<FirebaseUserToken> SignUpWithEmailAndPassword(string email, string password);
+        /// <summary>
+        /// In order to use this method you have to enable Email/Password Sign-in provider 
+        /// </summary>
         Task<FirebaseUserToken> SignInWithEmailAndPassword(string email, string password);
+        /// <summary>
+        /// In order to use this method you have to enable Google Sign-in provider 
+        /// </summary>
+        Task<FirebaseOAuthUserToken> SignInWithGoogleAccessToken(string googleIdToken);
     }
 
     public class FirebaseService : IFirebaseService
@@ -111,6 +119,33 @@
             }
             
             return await JsonSerializer.DeserializeAsync<FirebaseUserToken>(contentStream);
+        }
+
+        public async Task<FirebaseOAuthUserToken> SignInWithGoogleAccessToken(string googleAccessToken)
+        {
+            var content = new FormUrlEncodedContent(new Dictionary<string, string>
+            {
+                { "autoCreate", "true" },
+                { "postBody", $"providerId=google.com&access_token={googleAccessToken}&nonce=nonce" },
+                { "requestUri", "http://localhost" },
+                { "returnIdpCredential", "true" },
+                { "returnSecureToken", "true" }
+            });
+
+            var httpClient = _httpClientFactory.CreateClient();
+
+            var httpResponseMessage = await httpClient.PostAsync($"https://identitytoolkit.googleapis.com/v1/accounts:signInWithIdp?key={_appSettings.WebAPIKey}", content);
+
+            using var contentStream = await httpResponseMessage.Content.ReadAsStreamAsync();
+
+            if (httpResponseMessage.IsSuccessStatusCode == false)
+            {
+                var contentError = await JsonSerializer.DeserializeAsync<FirebaseContentError>(contentStream);
+
+                throw new FirebaseException(contentError);
+            }
+
+            return await JsonSerializer.DeserializeAsync<FirebaseOAuthUserToken>(contentStream);
         }
     }
 }

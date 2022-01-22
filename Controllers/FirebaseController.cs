@@ -34,17 +34,21 @@
             return await _service.SignUpWithEmailAndPassword(email, password);
         }
 
-
         [HttpGet("SignInWithEmailAndPassword")]
         public async Task<ActionResult<FirebaseUserToken>> SignInWithEmailAndPassword(string email, string password)
         {
             return await _service.SignInWithEmailAndPassword(email, password);
         }
 
+        [HttpGet("SignInWithGoogleAccessToken")]
+        public async Task<ActionResult<FirebaseOAuthUserToken>> SignInWithGoogleAccessToken(string googleIdToken)
+        {
+            return await _service.SignInWithGoogleAccessToken(googleIdToken);
+        }
+
         /// <summary>
         /// You have to be authorized in swagger to be able get data from firebase token.
         /// </summary>
-        /// <returns></returns>
         [Authorize]
         [HttpGet("GetDataFromMyToken")]
         public async Task<ActionResult<FirebaseToken>> GetDataFromFirebaseToken()
